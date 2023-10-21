@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Pedimos al usuario que ingrese el nombre del archivo de texto
+echo "Ingrese el nombre del archivo de texto:"
+read filename
+
+# Abrimos el archivo de texto
+file_text=$(cat $filename)
+
+# Eliminamos los signos de puntuación
+file_text=$(echo $file_text | tr -d '.,;:'"!?-')
+
+# Convertimos todas las letras a minúsculas
+file_text=$(echo $file_text | tr '[:upper:]' '[:lower:]')
+
+# Creamos un diccionario para almacenar la frecuencia de cada palabra
+words_dict=()
+
+# Contabilizamos la frecuencia de cada palabra
+for word in $file_text; do
+  if [[ ! -z $word ]]; then
+    words_dict[word]=$((words_dict[word]+1))
+  fi
+done
+
+# Creamos un diccionario para almacenar la frecuencia de cada letra
+letters_dict=()
+
+# Contabilizamos la frecuencia de cada letra
+for letter in $(echo $file_text | tr -s ' '); do
+  letters_dict[letter]=$((letters_dict[letter]+1))
+done
+
+# Mostramos las 10 palabras más frecuentes
+echo "Las 10 palabras más frecuentes son:"
+for word in $(sort -nr -k 2 < <(for key in "${words_dict[@]}"; do echo -e "${key} ${words_dict[key]}"; done)); do
+  echo -e "${word}"
+done
+
+# Mostramos las 5 letras más frecuentes
+echo "Las 5 letras más frecuentes son:"
+for letter in $(sort -nr -k 2 < <(for key in "${letters_dict[@]}"; do echo -e "${key} ${letters_dict[key]}"; done)); do
+  echo -e "${letter}"
+done
